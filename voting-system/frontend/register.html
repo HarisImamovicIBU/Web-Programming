@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>VoteEZ</title>
+        <!-- Favicon-->
+        <link rel="icon" type="image/x-icon" href="../frontend/assets/img/favicon.ico" />
+        <!-- Bootstrap icons-->
+        <link href="../frontend/assets/css/bootstrap-icons.css" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="../frontend/assets/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
+        <!-- Spapp CSS-->
+        <link href="../frontend/assets/css/spapp.css" rel="stylesheet" media="screen"/>
+        <!-- Select2 CSS-->
+        <link href="../frontend/assets/css/select2.min.css" rel="stylesheet" media="screen">
+        <!-- Toastr CSS-->
+        <link href="../frontend/assets/css/toastr.min.css" rel="stylesheet">
+        <!-- DataTable CSS-->
+        <link href="../frontend/assets/css/datatables.min.css" rel="stylesheet" />
+    </head>
+<body><section class="bg-light py-5">
+    <div class="container px-5 my-5 px-5">
+        <div class="text-center mb-5">
+            <div class="d-flex justify-content-center align-items-center bg-danger text-white p-3 rounded mx-auto" style="width: 100px; height: 100px;">
+                <i class="bi bi-person-plus bg-danger" style="font-size: 2rem;"></i>
+            </div>
+            <h2 class="fw-bolder">Register</h2>
+        </div>
+        <div class="row gx-5 justify-content-center">
+            <div class="col-lg-6">
+                <form id="registerForm">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required placeholder="Enter your name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required placeholder="Enter your email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="text" class="form-control" id="phone" name="phone" required placeholder="Enter your phone number">
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required placeholder="Enter your password">
+                    </div>
+                    <button type="submit" class="btn btn-danger">Register</button>
+                </form>
+                <div class="mt-3">
+                    <p>Already have an account? <a href="login.html" id="loginLink">Log in!</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Bootstrap core JS-->
+<script src="../frontend/assets/js/bootstrap.bundle.min.js"></script>
+<!-- JQuery-->
+<script src="../frontend/assets/js/jquery-3.7.1.min.js"></script>
+<!-- DataTable JS-->
+<script src="../frontend/assets/js/datatables.min.js"></script>
+<!-- Jquery validation-->
+<script src="../frontend/assets/js/jquery.validate.min.js"></script>
+<!-- Jquery BlockUI-->
+<script src="../frontend/assets/js/jquery.blockUI.js"></script>
+<!-- JQuery Spapp-->
+<script src="../frontend/assets/js/jquery.spapp.min.js"></script>
+<!-- Select2 JS-->
+<script src="../frontend/assets/js/select2.min.js"></script>
+<!-- Toastr JS-->
+<script src="../frontend/assets/js/toastr.min.js"></script>
+<!-- Constants-->
+<script src="../frontend/utils/constants.js"></script>
+<!-- Utils-->
+<script src="../frontend/utils/utils.js"></script>
+<!-- Rest Client-->
+<script src="../frontend/utils/rest-client.js"></script>
+<!-- Services-->
+<script src="../frontend/services/user-service.js"></script>
+<script>
+   UserService.init();
+</script>
+</body>
+</html>

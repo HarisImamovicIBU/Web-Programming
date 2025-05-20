@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../data/Roles.php';
 
 /**
  * @OA\Get(
@@ -15,6 +16,7 @@
  * )
  */
 Flight::route("GET /parties", function(){
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
     Flight::json(Flight::party_service()->get_all());
 });
 
@@ -46,6 +48,7 @@ Flight::route("GET /parties", function(){
  * )
  */
 Flight::route("GET /party_by_id",function(){
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
     Flight::json(Flight::party_service()->get_by_id(Flight::request()->query['id']));
 });
 
@@ -76,6 +79,7 @@ Flight::route("GET /party_by_id",function(){
  * )
  */
 Flight::route("GET /party/@id",function($id){
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
     Flight::json(Flight::party_service()->get_by_id($id));
 });
 
@@ -86,7 +90,7 @@ Flight::route("GET /party/@id",function($id){
  *     description="Add a new party to the database.",
  *     tags={"parties"},
  *     security={
- *         {"ApiKey": {}}
+ *         {"APIKey": {}}
  *     },
  *     @OA\RequestBody(
  *         description="Add new party",
@@ -121,11 +125,18 @@ Flight::route("GET /party/@id",function($id){
  * )
  */
 Flight::route("POST /party", function(){
-    $request = Flight::request()->data->getData();
-    Flight::json([
-        'message'=>"Party has been added!",
-        'data'=>Flight::party_service()->add($request)
-    ]);
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
+    $user = Flight::get('user');
+    if($user->role === Roles::ADMIN){
+        $request = Flight::request()->data->getData();
+        Flight::json([
+            'message'=>"Party has been added!",
+            'data'=>Flight::party_service()->add($request)
+        ]);
+    }
+    else{
+        Flight::json(['message'=>"Only admins have the permission for this operation!"]);
+    }
 });
 
 /**
@@ -135,7 +146,7 @@ Flight::route("POST /party", function(){
  *     description="Update party information using its ID.",
  *     tags={"parties"},
  *     security={
- *         {"ApiKey": {}}
+ *         {"APIKey": {}}
  *     },
  *     @OA\Parameter(
  *         name="id",
@@ -168,11 +179,18 @@ Flight::route("POST /party", function(){
  * )
  */
 Flight::route("PATCH /party/@id",function($id){
-    $party = Flight::request()->data->getData();
-    Flight::json([
-        'message'=>"Party has been updated!",
-        'data'=>Flight::party_service()->update($party,$id,'id')
-    ]);
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
+    $user = Flight::get('user');
+    if($user->role === Roles::ADMIN){
+        $party = Flight::request()->data->getData();
+        Flight::json([
+            'message'=>"Party has been updated!",
+            'data'=>Flight::party_service()->update($party,$id,'id')
+        ]);
+    }
+    else{
+        Flight::json(['message'=>"Only admins have the permission for this operation!"]);
+    }
 });
 
 
@@ -183,7 +201,7 @@ Flight::route("PATCH /party/@id",function($id){
  *     description="Delete a party from the database using its ID.",
  *     tags={"parties"},
  *     security={
- *         {"ApiKey": {}}
+ *         {"APIKey": {}}
  *     },
  *     @OA\Parameter(
  *         name="id",
@@ -204,7 +222,14 @@ Flight::route("PATCH /party/@id",function($id){
  * )
  */
 Flight::route("DELETE /party/@id",function($id){
-    Flight::party_service()->delete($id);
-    Flight::json(['message'=>"Party has been deleted!"]);
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
+    $user = Flight::get('user');
+    if($user->role === Roles::ADMIN){
+        Flight::party_service()->delete($id);
+        Flight::json(['message'=>"Party has been deleted!"]);
+    }
+    else{
+        Flight::json(['message'=>"Only admins have the permission for this operation!"]);
+    }
 });
 

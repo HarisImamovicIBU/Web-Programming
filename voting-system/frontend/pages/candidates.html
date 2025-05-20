@@ -6,25 +6,55 @@
             <p class="lead mb-0">Sort by different criteria</p>
             <p class="lead mb-0">Search for a specific candidate</p>
             <p class="lead mb-0">Change the number of entries per page</p>
+        </div>
+        <div id="buttonContainer">
 
         </div>
         <div class="row gx-5 justify-content-center">
             <div class="table-responsive">
                 <table class="table table-dark table-bordered text-center" id="candidatesTable">
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Age</th>
-                            <th scope="col">Political Party</th>
-                            <th scope="col">Motto</th>
-                            <th scope="col" id="admin-column" class="text-nowrap">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
+
                 </table>
             </div>
         </div>        
     </div>
+
+  <!-- Modal for adding-->
+    <div class="modal fade" id="exampleModal4" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <form id="add-candidate-form">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Add candidate</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" class="form-control" id="name" name="name">
+                </div>
+                <div class="form-group">
+                    <label for="age">Age:</label>
+                    <input type="text" class="form-control" id="age" name="age">
+                </div>
+                <div class="form-group">
+                    <label for="party_id">Party ID:</label>
+                    <input type="text" class="form-control" id="party_id" name="party_id">
+                </div>        
+                <div class="form-group">
+                    <label for="motto">Motto:</label>
+                    <input type="text" class="form-control" id="motto" name="motto">
+                </div>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="CandidateService.closeModal()">Close</button>
+            <button type="submit" class="btn btn-primary">Add</button>
+            </div>
+        </div>
+        </form>
+        </div>
+    </div>
+
   <!-- Modal for viewing-->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -34,7 +64,21 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!--Load candidate data from db-->
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Age</th>
+                                <th scope="col">Party ID</th>
+                                <th scope="col">Motto</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-row-view-more">
+                            
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -53,7 +97,23 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!--Load candidate data from db-->
+                <input type="text" id="edit-candidate-id" name="id" required hidden />
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" class="form-control" id="name" name="name">
+                    </div>
+                    <div class="form-group">
+                        <label for="age">Age:</label>
+                        <input type="text" class="form-control" id="age" name="age">
+                    </div>
+                    <div class="form-group">
+                        <label for="party_id">Party ID:</label>
+                        <input type="text" class="form-control" id="party_id" name="party_id">
+                    </div>
+                    <div class="form-group">
+                        <label for="motto">Motto:</label>
+                        <input type="text" class="form-control" id="motto" name="motto">
+                    </div>
             </div>
             <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -71,15 +131,18 @@
             <h1 class="modal-title fs-5" id="exampleModalLabel">Delete candidate</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <!--Load candidate data from db-->
+            <input id="delete-candidate-id" name="id" hidden />
+            <div class="modal-body" id="delete-candidate-body">
             </div>
             <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-danger">Delete</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="CandidateService.closeModal()">Close</button>
+            <button type="button" class="btn btn-danger" onclick="CandidateService.deleteCandidate()">Delete</button>
             </div>
         </div>
         </div>
     </div>
 </section>
-<script src="../frontend/utils/utils.js"></script>
+<script>
+    UserService.generateDatatableAdminButton();
+    CandidateService.init();
+</script>

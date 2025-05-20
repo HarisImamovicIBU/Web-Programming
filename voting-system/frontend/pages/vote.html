@@ -24,19 +24,23 @@
             </div>
         </div>
     </div>
+    <!-- Popup modal-->
     <div class="modal fade" id="areYouSureModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Modal title</h5>
+              <h5 class="modal-title">Confirm vote</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">Are you sure you want to start voting?</div>
+            <div class="modal-body">Are you sure you want to submit your vote?</div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-danger">Start voting</button>
+              <button type="button" class="btn btn-danger">Vote</button>
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Go back</button>
             </div>
           </div>
         </div>
       </div>      
 </section>
+<script>
+    VoteService.init();
+</script>

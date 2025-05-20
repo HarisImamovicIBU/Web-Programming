@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../../data/Roles.php';
+
 //Get all candidates from the database
 /**
  * @OA\Get(
@@ -6,7 +8,7 @@
  *     tags={"candidates"},
  *     summary="Return all candidates from the API.",
  *     security={
- *         {"ApiKey": {}}
+ *         {"APIKey": {}}
  *     },
  *     @OA\Response(
  *         response=200,
@@ -15,6 +17,7 @@
  * )
  */
 Flight::route("GET /candidates", function(){
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
     Flight::json(Flight::candidate_service()->get_all());
 });
 
@@ -25,7 +28,7 @@ Flight::route("GET /candidates", function(){
  *     tags={"candidates"},
  *     summary="Fetch individual candidate by ID.",
  *     security={
- *         {"ApiKey": {}}
+ *         {"APIKey": {}}
  *     },
  *     @OA\Parameter(
  *         name="id",
@@ -46,6 +49,7 @@ Flight::route("GET /candidates", function(){
  * )
  */
 Flight::route("GET /candidate_by_id", function(){
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
     Flight::json(Flight::candidate_service()->get_by_id(Flight::request()->query['id']));
 });
 
@@ -56,7 +60,7 @@ Flight::route("GET /candidate_by_id", function(){
  *     tags={"candidates"},
  *     summary="Fetch individual candidate by ID from path.",
  *     security={
- *         {"ApiKey": {}}
+ *         {"APIKey": {}}
  *     },
  *     @OA\Parameter(
  *         name="id",
@@ -77,6 +81,7 @@ Flight::route("GET /candidate_by_id", function(){
  * )
  */
 Flight::route("GET /candidate/@id", function($id){
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
     Flight::json(Flight::candidate_service()->get_by_id($id));
 });
 
@@ -87,7 +92,7 @@ Flight::route("GET /candidate/@id", function($id){
  *     tags={"candidates"},
  *     summary="Fetch candidates by Party ID from path.",
  *     security={
- *         {"ApiKey": {}}
+ *         {"APIKey": {}}
  *     },
  *     @OA\Parameter(
  *         name="party_id",
@@ -108,6 +113,7 @@ Flight::route("GET /candidate/@id", function($id){
  * )
  */
 Flight::route("GET /candidates/@party_id",function($party_id){
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
     Flight::json(Flight::candidate_service()->get_by_party_id($party_id));
 });
 
@@ -120,7 +126,7 @@ Flight::route("GET /candidates/@party_id",function($party_id){
  *     description="Add a new candidate to the database.",
  *     tags={"candidates"},
  *     security={
- *         {"ApiKey": {}}
+ *         {"APIKey": {}}
  *     },
  *     @OA\RequestBody(
  *         description="Add new candidate",
@@ -173,11 +179,18 @@ Flight::route("GET /candidates/@party_id",function($party_id){
  * )
  */
 Flight::route("POST /candidate", function(){
-    $request = Flight::request()->data->getData();
-    Flight::json([
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
+    $user = Flight::get('user');
+    if($user->role === Roles::ADMIN){
+        $request = Flight::request()->data->getData();
+        Flight::json([
         'message'=>"Candidate has been added!",
         'data'=>Flight::candidate_service()->add($request)
     ]);
+    }
+    else{
+        Flight::json(['message' => "Only admins have the permission for this operation!"]);
+    }
 });
 
 //Update a candidate from the database
@@ -188,7 +201,7 @@ Flight::route("POST /candidate", function(){
  *     description="Update candidate information using their ID.",
  *     tags={"candidates"},
  *     security={
- *         {"ApiKey": {}}
+ *         {"APIKey": {}}
  *     },
  *     @OA\Parameter(
  *         name="id",
@@ -224,11 +237,22 @@ Flight::route("POST /candidate", function(){
  * )
  */
 Flight::route("PATCH /candidate/@id", function ($id) {
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
+    $user = Flight::get('user');
     $candidate = Flight::request()->data->getData();
-    Flight::json([
-        'message' => "Candidate has been edited!",
-        'data' => Flight::candidate_service()->update($candidate, $id, 'id')
-    ]);
+    if($user->role === Roles::VOTER && isset($candidate['vote_count']) && $candidate['vote_count'] === 'increment'){
+        Flight::candidate_service()->increment_votes($id);
+        Flight::json(['message'=>'Vote count incremented.']);
+        return;
+    }
+    if($user->role === Roles::ADMIN){
+        Flight::json([
+        'message'=>"Candidate has been updated!",
+        'data'=>Flight::candidate_service()->update($candidate, $id, 'id')
+        ]);
+        return;
+    }
+    Flight::json(['message'=>"Only admins have the permission for this operation!"]);
 });
 
 //Delete a candidate from the database
@@ -239,7 +263,7 @@ Flight::route("PATCH /candidate/@id", function ($id) {
  *     description="Delete a candidate from the database using their ID.",
  *     tags={"candidates"},
  *     security={
- *         {"ApiKey": {}}
+ *         {"APIKey": {}}
  *     },
  *     @OA\Parameter(
  *         name="id",
@@ -260,6 +284,14 @@ Flight::route("PATCH /candidate/@id", function ($id) {
  * )
  */
 Flight::route("DELETE /candidate/@id", function($id){
-    Flight::candidate_service()->delete($id);
-    Flight::json(['message'=>"Candidate has been deleted!"]);
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
+    $user = Flight::get('user');
+    if($user->role === Roles::ADMIN){
+        Flight::candidate_service()->delete($id);
+        Flight::json(['message'=>"Candidate has been deleted!"]);
+    }
+    else{
+        Flight::json(['message'=>"Only admins have the permission for this operation!"]);
+    }
+    
 });

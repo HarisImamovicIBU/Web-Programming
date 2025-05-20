@@ -15,7 +15,7 @@
  *     description="API server"
  * ),
  * @OA\SecurityScheme(
- *     securityScheme="ApiKey",
+ *     securityScheme="APIKey",
  *     type="apiKey",
  *     in="header",
  *     name="Authentication"

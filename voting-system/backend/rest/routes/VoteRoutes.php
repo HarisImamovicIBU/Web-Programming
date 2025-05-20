@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../../data/Roles.php';
+
 /**
  * @OA\Get(
  *      path="/votes",
@@ -12,7 +14,14 @@
  * )
  */
 Flight::route("GET /votes", function(){
-    Flight::json(Flight::vote_service()->get_all());
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
+    $user = Flight::get('user');
+    if($user->role === Roles::ADMIN){
+        Flight::json(Flight::vote_service()->get_all());
+    }
+    else{
+        Flight::json(['message'=>"Only admins have the permission for this operation!"]);
+    }
 });
 
 /**
@@ -40,7 +49,14 @@ Flight::route("GET /votes", function(){
  * )
  */
 Flight::route("GET /vote_by_id", function(){
-    Flight::json(Flight::vote_service()->get_by_id(Flight::request()->query['id']));
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
+    $user = Flight::get('user');
+    if($user->role === Roles::ADMIN){
+        Flight::json(Flight::vote_service()->get_by_id(Flight::request()->query['id']));
+    }
+    else{
+        Flight::json(['message'=>"Only admins have the permission for this operation!"]);
+    }
 });
 
 /**
@@ -68,7 +84,14 @@ Flight::route("GET /vote_by_id", function(){
  * )
  */
 Flight::route("GET /vote/@id", function($id){
-    Flight::json(Flight::vote_service()->get_by_id($id));
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
+    $user = Flight::get('user');
+    if($user->role === Roles::ADMIN){
+        Flight::json(Flight::vote_service()->get_by_id($id));
+    }
+    else{
+        Flight::json(['message'=>"Only admins have the permission for this operation!"]);
+    }
 });
 
 
@@ -97,7 +120,14 @@ Flight::route("GET /vote/@id", function($id){
  * )
  */
 Flight::route("GET /votes/@user_id",function($user_id){
-    Flight::json(Flight::vote_service()->get_by_user_id($user_id));
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
+    $user = Flight::get('user');
+    if($user->role === Roles::ADMIN){
+        Flight::json(Flight::vote_service()->get_by_user_id($user_id));
+    }
+    else{
+        Flight::json(['message'=>"Only admins have the permission for this operation!"]);
+    }
 }); 
 /**
  * @OA\Post(
@@ -126,11 +156,12 @@ Flight::route("GET /votes/@user_id",function($user_id){
  * )
  */
 Flight::route("POST /vote", function(){
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
     $request = Flight::request()->data->getData();
     Flight::json([
         'message'=>"Vote has been added!",
         'data'=>Flight::vote_service()->add($request)
-    ]);
+    ]);    
 });
 
 /**
@@ -171,11 +202,18 @@ Flight::route("POST /vote", function(){
  * )
  */
 Flight::route("PATCH /vote/@id", function($id){
-    $vote = Flight::request()->data->getData();
-    Flight::json([
-        'message'=>"Vote has been updated!",
-        'data'=>Flight::vote_service()->update($vote, $id, 'id')
-    ]);
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
+    $user = Flight::get('user');
+    if($user->role === Roles::ADMIN){
+        $vote = Flight::request()->data->getData();
+        Flight::json([
+            'message'=>"Vote has been updated!",
+            'data'=>Flight::vote_service()->update($vote, $id, 'id')
+        ]);
+    }
+    else{
+        Flight::json(['message'=>"Only admins have the permission for this operation!"]);
+    }
 });
 
 /**
@@ -206,6 +244,13 @@ Flight::route("PATCH /vote/@id", function($id){
  * )
  */
 Flight::route("DELETE /vote/@id", function($id){
-    Flight::vote_service()->delete($id);
-    Flight::json(['message'=>"Vote has been deleted!"]);
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
+    $user = Flight::get('user');
+    if($user->role === Roles::ADMIN){
+        Flight::vote_service()->delete($id);
+        Flight::json(['message'=>"Vote has been deleted!"]);
+    }
+    else{
+        Flight::json(['message'=>"Only admins have the permission for this operation!"]);
+    }
 });

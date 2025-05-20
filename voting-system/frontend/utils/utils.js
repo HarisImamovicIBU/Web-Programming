@@ -2,15 +2,7 @@ var Utils = {
     init_spapp: () => {
         var app = $.spapp({
             templateDir: "./pages/",
-            defaultView: "#register"
-        });
-        app.route({
-            view: "register",
-            load: "register.html"
-        });
-        app.route({
-            view: "login",
-            load: "login.html"
+            defaultView: "#home"
         });
         app.route({
             view: "home",
@@ -18,17 +10,11 @@ var Utils = {
         });
         app.route({
             view: "candidates",
-            load: "candidates.html",
-            onCreate: ()=>{
-                Utils.fetchDataAndCreateDatatable();
-            }
+            load: "candidates.html"
         });
         app.route({
             view: "vote",
-            load: "vote.html",
-            onCreate: ()=>{
-                Utils.fetchDataAndCreateSelect2();
-            }
+            load: "vote.html"
         });
         app.route({
             view: "contact",
@@ -41,6 +27,31 @@ var Utils = {
         });
         app.run();
     },
+    datatable: function (table_id, columns, data, pageLength=15) {
+        if ($.fn.dataTable.isDataTable("#" + table_id)) {
+            $("#" + table_id)
+            .DataTable()
+            .destroy();
+        }
+        $("#" + table_id).DataTable({
+          data: data,
+          columns: columns,
+          pageLength: pageLength,
+          lengthMenu: [2, 5, 10, 15, 25, 50, 100, "All"],
+        });
+    },
+    parseJwt: function(token) {
+        if (!token) return null;
+        try {
+          const payload = token.split('.')[1];
+          const decoded = atob(payload);
+          return JSON.parse(decoded);
+        } catch (e) {
+          console.error("Invalid JWT token", e);
+          return null;
+        }
+    }
+    /*
     fetchDataAndCreateDatatable: () => {
         $.ajax({
             url: "data/CANDIDATES.json",
@@ -109,5 +120,5 @@ var Utils = {
                 console.error("Failed to load candidates: ", error);
             }
         });
-    }
+    }*/
 };

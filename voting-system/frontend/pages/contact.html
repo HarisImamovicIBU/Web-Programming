@@ -10,22 +10,16 @@
         </div>
         <div class="row gx-5 justify-content-center">
             <div class="col-lg-6">
-                <form>
-                    <div class="mb-3">
-                      <label for="email" class="form-label">Email:</label>
-                      <input type="email" class="form-control" id="email" placeholder="Enter your email" name="email">
-                    </div>
-                    <div class="mb-3">
-                        <label for="pnumber" class="form-label">Phone number:</label>
-                        <input type="pnumber" class="form-control" id="pnumber" placeholder="Enter your phone number" name="pnumber">
-                    </div>
+                <form id="inquiry-form">
                     <div class="mb-3">
                         <label for="comment">Comment:</label>
-                        <textarea class="form-control" rows="5" id="comment" name="text"></textarea>
+                        <textarea class="form-control" rows="6" id="comment" name="comment"></textarea>
                     </div>
                     <button type="submit" class="btn btn-danger">Submit</button>
                 </form>
-
         </div>
     </div>
 </section>
+<script>
+    InquiryService.init();
+</script>

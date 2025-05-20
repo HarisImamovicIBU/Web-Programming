@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../../data/Roles.php';
+
 /**
  * @OA\Get(
  *      path="/inquiries",
@@ -14,7 +16,14 @@
  * )
  */
 Flight::route("GET /inquiries", function(){
-    Flight::json(Flight::inquiry_service()->get_all());
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
+    $user = Flight::get('user');
+    if($user->role === Roles::ADMIN){
+        Flight::json(Flight::inquiry_service()->get_all());
+    }
+    else{
+        Flight::json(['message'=>"Only admins have the permission for this operation!"]);
+    }
 });
 
 /**
@@ -44,7 +53,14 @@ Flight::route("GET /inquiries", function(){
  * )
  */
 Flight::route("GET /inquiry_by_id", function(){
-    Flight::json(Flight::inquiry_service()->get_by_id(Flight::request()->query['id']));
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
+    $user = Flight::get('user');
+    if($user->role === Roles::ADMIN){
+        Flight::json(Flight::inquiry_service()->get_by_id(Flight::request()->query['id']));
+    }
+    else{
+        Flight::json(['message'=>"Only admins have the permission for this operation!"]);
+    }
 });
 
 
@@ -54,7 +70,7 @@ Flight::route("GET /inquiry_by_id", function(){
  *     tags={"inquiries"},
  *     summary="Fetch individual inquiry by ID from path.",
  *     security={
- *         {"ApiKey": {}}
+ *         {"APIKey": {}}
  *     },
  *     @OA\Parameter(
  *         name="id",
@@ -75,7 +91,14 @@ Flight::route("GET /inquiry_by_id", function(){
  * )
  */
 Flight::route("GET /inquiry/@id", function($id){
-    Flight::json(Flight::inquiry_service()->get_by_id($id));
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
+    $user = Flight::get('user');
+    if($user->role === Roles::ADMIN){
+        Flight::json(Flight::inquiry_service()->get_by_id($id));
+    }
+    else{
+        Flight::json(['message'=>"Only admins have the permission for this operation!"]);
+    }
 });
 
 /**
@@ -105,7 +128,14 @@ Flight::route("GET /inquiry/@id", function($id){
  * )
  */
 Flight::route("GET /inquiries/@user_id",function($user_id){
-    Flight::json(Flight::inquiry_service()->get_by_user_id($user_id));
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
+    $user = Flight::get('user');
+    if($user->role === Roles::ADMIN){
+        Flight::json(Flight::inquiry_service()->get_by_user_id($user_id));
+    }
+    else{
+        Flight::json(['message'=>"Only admins have the permission for this operation!"]);
+    }
 });
 
 
@@ -116,7 +146,7 @@ Flight::route("GET /inquiries/@user_id",function($user_id){
  *     description="Add a new inquiry to the database.",
  *     tags={"inquiries"},
  *     security={
- *         {"ApiKey": {}}
+ *         {"APIKey": {}}
  *     },
  *     @OA\RequestBody(
  *         description="Add new inquiry",
@@ -151,6 +181,7 @@ Flight::route("GET /inquiries/@user_id",function($user_id){
  * )
  */
 Flight::route("POST /inquiry", function(){
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
     $request = Flight::request()->data->getData();
     Flight::json([
         'message'=>"Inquiry has been added!",
@@ -165,7 +196,7 @@ Flight::route("POST /inquiry", function(){
  *     description="Update an inquiry information using its ID.",
  *     tags={"inquiries"},
  *     security={
- *         {"ApiKey": {}}
+ *         {"APIKey": {}}
  *     },
  *     @OA\Parameter(
  *         name="id",
@@ -198,11 +229,18 @@ Flight::route("POST /inquiry", function(){
  * )
  */
 Flight::route("PATCH /inquiry/@id", function($id){
-    $inquiry = Flight::request()->data->getData();
-    Flight::json([
-        'message'=>"Inquiry has been updated!",
-        'data'=>Flight::inquiry_service()->update($inquiry,$id,'id')
-    ]);
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
+    $user = Flight::get('user');
+    if($user->role === Roles::ADMIN){
+        $inquiry = Flight::request()->data->getData();
+        Flight::json([
+            'message'=>"Inquiry has been updated!",
+            'data'=>Flight::inquiry_service()->update($inquiry,$id,'id')
+        ]);
+    }
+    else{
+        Flight::json(['message'=>"Only admins have the permission for this operation!"]);
+    }
 });
 
 /**
@@ -212,7 +250,7 @@ Flight::route("PATCH /inquiry/@id", function($id){
  *     description="Delete an inquiry from the database using its ID.",
  *     tags={"inquiries"},
  *     security={
- *         {"ApiKey": {}}
+ *         {"APIKey": {}}
  *     },
  *     @OA\Parameter(
  *         name="id",
@@ -233,6 +271,13 @@ Flight::route("PATCH /inquiry/@id", function($id){
  * )
  */
 Flight::route("DELETE /inquiry/@id", function($id){
-    Flight::inquiry_service()->delete($id);
-    Flight::json(['message'=>"Inquiry has been deleted!"]);
+    Flight::auth_middleware()->authorizeRoles([Roles::VOTER, Roles::ADMIN]);
+    $user = Flight::get('user');
+    if($user->role === Roles::ADMIN){
+        Flight::inquiry_service()->delete($id);
+        Flight::json(['message'=>"Inquiry has been deleted!"]);
+    }
+    else{
+        Flight::json(['message'=>"Only admins have the permission for this operation!"]);
+    }
 });
